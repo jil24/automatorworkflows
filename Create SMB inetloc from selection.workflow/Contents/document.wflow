@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>AMApplicationBuild</key>
-	<string>419</string>
+	<string>444.7</string>
 	<key>AMApplicationVersion</key>
-	<string>2.6</string>
+	<string>2.8</string>
 	<key>AMDocumentVersion</key>
 	<string>2</string>
 	<key>actions</key>
@@ -88,8 +88,16 @@ ENCODED=$(echo "$WHOLETHING" | curl -Gso /dev/null -w %{url_effective} --data-ur
 
 FINAL=smb://$(echo $ENCODED | sed 's/\%2F/\//g')
 
+# if containing directory isn't writable just write to the desktop
+if [ -w $(dirname "$1") ]
+then
+	TARGETPATH="$(dirname "$1")/$(basename "$1/").inetloc"
+else
+	TARGETPATH="$HOME/Desktop/$(basename "$1/").inetloc"
+fi
+
 # does the inetloc file already exist?
-if [ -e "$(dirname "$1")/$(basename "$1/").inetloc" ]
+if [ -e "$TARGETPATH" ]
 then
 	osascript -e 'tell app "System Events" to display alert "Error: inetloc file already exists."'
 	exit
@@ -104,7 +112,7 @@ echo '''
 	&lt;string&gt;'''$FINAL'''&lt;/string&gt;
 &lt;/dict&gt;
 &lt;/plist&gt;
-''' &gt; "$(dirname "$1")/$(basename "$1/").inetloc"</string>
+''' &gt; "$TARGETPATH"</string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>
 					<key>inputMethod</key>
@@ -217,7 +225,7 @@ echo '''
 				<key>isViewVisible</key>
 				<true/>
 				<key>location</key>
-				<string>449.000000:253.000000</string>
+				<string>449.000000:842.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/English.lproj/main.nib</string>
 			</dict>
